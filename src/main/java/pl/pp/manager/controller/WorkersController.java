@@ -1,4 +1,4 @@
-package pl.pp.manager.controler;
+package pl.pp.manager.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
