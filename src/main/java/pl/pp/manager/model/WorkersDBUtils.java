@@ -7,30 +7,29 @@ import java.util.List;
 
 public class WorkersDBUtils {
 
-    public static List<Worker> getWorkers(DataSource dataSource){
+    public static List<Worker> getWorkers(DataSource dataSource) {
         System.out.println("Metoda get Workers");
 
         List<Worker> workers = new ArrayList<>();
 
-        try(Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM workers");
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
 
                 int id = resultSet.getInt("id");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
                 double salary = resultSet.getDouble("salary");
 
-                Worker worker = new Worker(id, firstName,lastName,salary);
+                Worker worker = new Worker(id, firstName, lastName, salary);
                 System.out.println(worker);
                 workers.add(worker);
             }
 
-        }
-        catch (SQLException throwables) {
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return workers;
@@ -41,8 +40,8 @@ public class WorkersDBUtils {
 
         String sql = "INSERT INTO workers (first_name, last_name, salary) VALUES (?, ?, ?)";
 
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, worker.getFirstName());
             statement.setString(2, worker.getLastName());
@@ -55,4 +54,49 @@ public class WorkersDBUtils {
         }
 
     }
+
+    public static Worker getWorkersById(int id, DataSource dataSource) {
+        String sql = "SELECT * FROM workers WHERE id= ?";
+        Worker worker = null;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                double salary = resultSet.getDouble("salary");
+
+                worker = new Worker(id, firstName, lastName, salary);
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return worker;
+    }
+
+    public static void updateWorker(Worker worker, DataSource dataSource) {
+        String sql = "UPDATE workers SET first_name=?, last_name=?, salary=? WHERE id=?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, worker.getFirstName());
+            statement.setString(2, worker.getLastName());
+            statement.setDouble(3, worker.getSalary());
+            statement.setInt(4, worker.getId());
+
+            statement.execute();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
 }
+

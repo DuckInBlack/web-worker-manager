@@ -38,6 +38,5 @@ public class AddWorkerController extends HttpServlet {
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/worker/list.jsp");
         dispatcher.forward(request, response);
-
     }
 }
